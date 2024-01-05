@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Отправка Тикета</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #2c3e50;
+      color: #ecf0f1;
+      text-align: center;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+    #ticketForm {
+      width: 80%;
+      max-width: 400px;
+      padding: 20px;
+      background-color: #34495e;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    }
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: bold;
+      color: #ecf0f1;
+      text-align: left;
+      margin-left: 10px;
+    }
+    input,
+    textarea {
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 16px;
+      box-sizing: border-box;
+      border: 1px solid #2c3e50;
+      border-radius: 4px;
+      color: #2c3e50;
+      background-color: #ecf0f1;
+    }
+    #submitBtn {
+      background-color: #3498db;
+      color: #ecf0f1;
+      padding: 10px 15px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    #submitBtn:hover {
+      background-color: #2980b9;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="ticketForm">
+    <h2>Отправить Тикет</h2>
+    <form id="form">
+      <label for="discordUsername">Ваш Discord для обратной связи:</label>
+      <input type="text" id="discordUsername" name="discordUsername" placeholder="Пример: paynilso" required>
+      
+      <label for="issueTitle">Название проблемы:</label>
+      <input type="text" id="issueTitle" name="issueTitle" placeholder="Введите название проблемы" required>
+      
+      <label for="issueDescription">Опишите вашу проблему подробнее:</label>
+      <textarea id="issueDescription" name="issueDescription" rows="6" placeholder="Введите детали проблемы..." required></textarea>
+      <br>
+      <button type="button" id="submitBtn">Отправить Тикет</button>
+    </form>
+  </div>
+
+  <script>
+    const webhookURL = 'https://discord.com/api/webhooks/1153309592122556446/yyx9AwOejgstDdZvGNQDWfdNYJo2BfatjZpCoZDJr3_Wxo2ZDjq6j3A2dDlZcVaEhhNc';
+
+    document.getElementById('submitBtn').addEventListener('click', () => {
+      const discordUsername = document.getElementById('discordUsername').value;
+      const issueTitle = document.getElementById('issueTitle').value;
+      const issueDescription = document.getElementById('issueDescription').value;
+
+      if (discordUsername.trim() !== '' && issueTitle.trim() !== '' && issueDescription.trim() !== '') {
+        const payload = {
+          content: `**Discord для обратной связи:** ${discordUsername}\n**Название проблемы:** ${issueTitle}\n**Описание проблемы:**\n\`\`\`${issueDescription}\`\`\``,
+        };
+
+        fetch(webhookURL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(payload),
+        })
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Не удалось отправить тикет');
+          }
+          alert('Тикет успешно отправлен!');
+        })
+        .catch(error => {
+          console.error(error);
+          alert('Не удалось отправить тикет');
+        });
+      } else {
+        alert('Пожалуйста, заполните все поля формы');
+      }
+    });
+
+    setInterval(() => {
+      const defaultTicketContent = 'Стандартное содержание тикета для запланированной отправки';
+      const payload = {
+        content: `**Discord для обратной связи:** DefaultUser#0000\n**Название проблемы:** Default Issue\n**Описание проблемы:**\n\`\`\`${defaultTicketContent}\`\`\``,
+      };
+
+      fetch(webhookURL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Не удалось отправить запланированный тикет');
+        }
+        console.log('Запланированный тикет успешно отправлен');
+      })
+      .catch(error => {
+        console.error(error);
+      });
+    }, 600000);
+  </script>
+
+</body>
+</html>
